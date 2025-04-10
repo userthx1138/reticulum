@@ -11,55 +11,55 @@ However; I have now deployed my permanent setup on a MangoPI MQ-PRO running Ubun
 
 ## Install RNSD to a dedicated user account.
 ### Create a user for the rnsd service
-User is `reticulum`.
+User is `rns`.
 ```console
-user@pi:~ $ sudo adduser --disabled-password reticulum
-Adding user `reticulum' ...
-Adding new group `reticulum' (1002) ...
-Adding new user `reticulum' (1002) with group `reticulum (1002)' ...
-Creating home directory `/home/reticulum' ...
+user@pi:~ $ sudo adduser --disabled-password rns
+Adding user `rns' ...
+Adding new group `rns' (1002) ...
+Adding new user `rns' (1002) with group `rns (1002)' ...
+Creating home directory `/home/rns' ...
 Copying files from `/etc/skel' ...
-Changing the user information for reticulum
+Changing the user information for rns
 Enter the new value, or press ENTER for the default
-	Full Name []: reticulum 
+	Full Name []: rns 
 	Room Number []: 
 	Work Phone []: 
 	Home Phone []: 
 	Other []: 
 Is the information correct? [Y/n] y
-Adding new user `reticulum' to supplemental / extra groups `users' ...
-Adding user `reticulum' to group `users' ...
+Adding new user `rns' to supplemental / extra groups `users' ...
+Adding user `rns' to group `users' ...
 
 # Add any necessary groups, eg if you want to work with USB RNodes:
-user@pi:~ $ sudo usermod -a -G dialout reticulum
+user@pi:~ $ sudo usermod -a -G dialout rns
 
 # Install the dependencies needed for rnsd
 user@pi:~ $ sudo apt install python3 python3-pip python3-cryptography python3-pyserial
 
 # Now log in as the new user.
-user@pi:~ $ sudo su - reticulum
+user@pi:~ $ sudo su - rns
 
-reticulum@pi:~ $ id
-uid=1002(reticulum) gid=1002(reticulum) groups=1002(reticulum),20(dialout),100(users)
+rns@pi:~ $ id
+uid=1002(rns) gid=1002(rns) groups=1002(rns),20(dialout),100(users)
 -- The numeric UID/GID's shown may vary from system to system.
 
-reticulum@pi:~ $ pwd
-/home/reticulum
+rns@pi:~ $ pwd
+/home/rns
 ```
-You now have a dedicated `reticulum` user, if you want you can set up a password or (like me) import keys for ssh login access; this can be useful for maintenance and log checking.
+You now have a dedicated `rns` user, if you want you can set up a password or (like me) import keys for ssh login access; this can be useful for maintenance and log checking.
 - The goal here is to run rnsd as a low-privilege user, so *do not* add this user to sudo or the `adm` group, or any other group that may compromise your system.
 
 ### Install rnsd in a python virtual env
 The python virtual environment keeps our python install and it's dependencies seperate from the primary system python install. See: https://docs.python.org/3/library/venv.html
 ```console
-reticulum@pi:~ $ python3 -m venv env
-reticulum@pi:~ $ . env/bin/activate
+rns@pi:~ $ python3 -m venv reticulum
+rns@pi:~ $ . reticulum/bin/activate
 ```
 - To exit the python virtual environment run `deactivate`.
 
 We now install RNS via python; on a x86 (PC/Laptop/Mac) or ARM (Pi) platforms the cryptography module is pre-built and this process is simple and fast.
 ```console
-(env) reticulum@pi:~ $ pip install rns
+(reticulum) rns@pi:~ $ pip install rns
 Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
 Collecting rns
   Downloading https://www.piwheels.org/simple/rns/rns-0.9.1-py3-none-any.whl (399 kB)
@@ -82,9 +82,9 @@ ON OTHER PLATFORMS (eg risc-v at this time of writing) the cryptography module n
 
 ### Run `rnsd` to generate a default config in `~/.reticulum`
 ```console
-(env) reticulum@lilly:~ $ rnsd
+(reticulum) rns@lilly:~ $ rnsd
 [2025-02-09 17:36:42] [Notice] Could not load config file, creating default configuration file...
-[2025-02-09 17:36:42] [Notice] Default config file created. Make any necessary changes in /home/reticulum/.reticulum/config and restart Reticulum if needed.
+[2025-02-09 17:36:42] [Notice] Default config file created. Make any necessary changes in /home/rns/.reticulum/config and restart Reticulum if needed.
 [2025-02-09 17:36:45] [Notice] Started rnsd version 0.9.1
 ^C
 ```
@@ -95,16 +95,16 @@ You can now edit the newly-created `.reticulum/config` as needed, run `rnsd --ex
 Test your config by running `rnsd -v` in the virtual environment.
 
 ## Checking status 
-When `rnsd` is running you can check it's status by logging in as the reticulem user and running `~/env/bin/rnstatus`; this will run the command in the virtual environment context.
+When `rnsd` is running you can check it's status by logging in as the reticulem user and running `~/reticulum/bin/rnstatus`; this will run the command in the virtual environment context.
 
-Alternatively; log in as the reticulum user and run `. env/bin/activate` (as above) to enter the virtual environment, the `env/bin` folder is added to your path when you do this, and you can now use reticulum commands such as `rnstatus`, `rnodeconf` etc. easily.
+Alternatively; log in as the rns user and run `. reticulum/bin/activate` (as above) to enter the virtual environment, the `reticulum/bin` folder is added to your path when you do this, and you can now use reticulum commands such as `rnstatus`, `rnodeconf` etc. easily.
 
 Now is also a good time to set up rnodes etc. 
 
 # Run as a service
 Once you have rnsd running correctly you can set it up as a service to run in the background.
 
-The reticulum documentation uses `systemd`'s new(ish) 'user' service file mechanism for this. However; the steps below use a more conventional approach and start the service as part of the main systemd startup mechanism; switching to the reticulum user only when the service starts.
+The reticulum documentation uses `systemd`'s new(ish) 'user' service file mechanism for this. However; the steps below use a more conventional approach and start the service as part of the main systemd startup mechanism; switching to the rns user only when the service starts.
 
 ## As `root` create a (user) service file:
 `user@pi:~ $ sudo vi /etc/systemd/system/rnsd.service`
@@ -123,16 +123,16 @@ After=default.target
 # add a short delay before Reticulum is
 # started by systemd:
 # ExecStartPre=/bin/sleep 10
-User=reticulum
+User=rns
 Type=simple
 Restart=always
 RestartSec=3
-ExecStart=/home/reticulum/env/bin/rnsd --service
+ExecStart=/home/rns/reticulum/bin/rnsd --service
 
 [Install]
 WantedBy=default.target
 ```
-Note that this differs from the 'user' service file given in the RNode documentation, this service file is started by the root systemd process, and has additional options to make it run as the `reticulum` user.
+Note that this differs from the 'user' service file given in the RNode documentation, this service file is started by the root systemd process, and has additional options to make it run as the `rns` user.
 
 Tell systemd about the service file, enable and activate with:
 ```console
@@ -147,23 +147,23 @@ user@pi:~ $ systemctl status rnsd.service
       Tasks: 12 (limit: 2040)
         CPU: 767ms
      CGroup: /system.slice/rnsd.service
-             └─7024 /home/reticulum/env/bin/python3 /home/reticulum/env/bin/rnsd --service
+             └─7024 /home/rns/reticulum/bin/python3 /home/rns/reticulum/bin/rnsd --service
 
 Feb 09 18:44:50 lilly.easytarget.org systemd[1]: Started rnsd.service - Reticulum Network Stack Daemon.
 ```
-The service will use `~reticulum/.reticulum/` for it's config, working data and logfiles.
+The service will use `~rns/.reticulum/` for it's config, working data and logfiles.
 
 For for more about using, configuring and running the service see:
 https://markqvist.github.io/Reticulum/manual/using.html
 
 # Maintain
-When you want to maintain, upgrade or work on the config you must log in as the `reticulum` user and activate the virtual environment with `$ source env/bin/activate`
+When you want to maintain, upgrade or work on the config you must log in as the `rns` user and activate the virtual environment with `$ source reticulum/bin/activate`
 
 To check the current status try:
 ```console
-user@pi:~ $ sudo su - reticulum
-reticulum@pi:~ $ source env/bin/activate
-(env) reticulum@pi:~/.reticulum $ rnstatus
+user@pi:~ $ sudo su - rns
+rns@pi:~ $ source reticulum/bin/activate
+(reticulum) rns@pi:~/.reticulum $ rnstatus
 ```
 
 You must stop and start the service as needed when reconfiguring or maintaining it
@@ -172,15 +172,15 @@ You must stop and start the service as needed when reconfiguring or maintaining 
 To upgrade try
 ```console
 user@pi:~ $ sudo systemctl stop rnsd.service
-user@pi:~ $ sudo su - reticulum
-reticulum@pi:~ $ source env/bin/activate
-(env) reticulum@lilly:~ $ pip install --upgrade rns
+user@pi:~ $ sudo su - rns
+rns@pi:~ $ source reticulum/bin/activate
+(reticulum) rns@lilly:~ $ pip install --upgrade rns
 Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
-Requirement already satisfied: rns in ./env/lib/python3.11/site-packages (0.9.1)
-Requirement already satisfied: cryptography>=3.4.7 in ./env/lib/python3.11/site-packages (from rns) (44.0.0)
-Requirement already satisfied: pyserial>=3.5 in ./env/lib/python3.11/site-packages (from rns) (3.5)
-Requirement already satisfied: cffi>=1.12 in ./env/lib/python3.11/site-packages (from cryptography>=3.4.7->rns) (1.17.1)
-Requirement already satisfied: pycparser in ./env/lib/python3.11/site-packages (from cffi>=1.12->cryptography>=3.4.7->rns) (2.22)
+Requirement already satisfied: rns in ./reticulum/lib/python3.11/site-packages (0.9.1)
+Requirement already satisfied: cryptography>=3.4.7 in ./reticulum/lib/python3.11/site-packages (from rns) (44.0.0)
+Requirement already satisfied: pyserial>=3.5 in ./reticulum/lib/python3.11/site-packages (from rns) (3.5)
+Requirement already satisfied: cffi>=1.12 in ./reticulum/lib/python3.11/site-packages (from cryptography>=3.4.7->rns) (1.17.1)
+Requirement already satisfied: pycparser in ./reticulum/lib/python3.11/site-packages (from cffi>=1.12->cryptography>=3.4.7->rns) (2.22)
 ```
 You can now do any other maintenance, check logs in .reticulum/logfile, etc
 
@@ -188,10 +188,10 @@ Test your changes by running `rnsd -v` on the commandline.
 
 When finished, exit and restart the service.
 ```console
-(env) reticulum@lilly:~ $ exit
+(reticulum) rns@lilly:~ $ exit
 user@pi:~ $ sudo systemctl start rnsd.service
 ```
-[TODO: work out correct /etc/sudoers systax to allow the `reticulum` user to stop/status/start the service]
+[TODO: work out correct /etc/sudoers systax to allow the `rns` user to stop/status/start the service]
 
 # APPENDIX: BUILDING CRYPTOGRAPHY MODULE
 
@@ -217,13 +217,13 @@ user@pi:~ $ sudo apt install libffi-dev libusb-dev python3-dev libudev-dev
 ### Error that Rust is not available
 Go to: https://www.rust-lang.org/tools/install
 
-Run the `Rustup` command given there *as the reticulum user*
+Run the `Rustup` command given there *as the rns user*
 - This will install a local copy of rust to your user homedir, do not install this as 'root'.
 - Accept the defaults when asked by the rustup installer.
 - If rust is **not** available for your architecture I'm afraid you will not be able to run `rnsd`, sorry.
 
 ```console
-(env) reticulum@iris:~$ <command given on rustup site, eg: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh>
+(reticulum) rns@iris:~$ <command given on rustup site, eg: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh>
 info: downloading installer
 
 Welcome to Rust!
@@ -234,26 +234,26 @@ programming language, and its package manager, Cargo.
 Rustup metadata and toolchains will be installed into the Rustup
 home directory, located at:
 
-  /home/reticulum/.rustup
+  /home/rns/.rustup
 
 This can be modified with the RUSTUP_HOME environment variable.
 
 The Cargo home directory is located at:
 
-  /home/reticulum/.cargo
+  /home/rns/.cargo
 
 This can be modified with the CARGO_HOME environment variable.
 
 The cargo, rustc, rustup and other commands will be added to
 Cargo's bin directory, located at:
 
-  /home/reticulum/.cargo/bin
+  /home/rns/.cargo/bin
 
 This path will then be added to your PATH environment variable by
 modifying the profile files located at:
 
-  /home/reticulum/.profile
-  /home/reticulum/.bashrc
+  /home/rns/.profile
+  /home/rns/.bashrc
 You can uninstall at any time with rustup self uninstall and
 these changes will be reverted.
 
@@ -313,16 +313,16 @@ To configure your current shell, you need to source
 the corresponding env file under $HOME/.cargo.
 
 This is usually done by running one of the following (note the leading DOT):
-. "$HOME/.cargo/env"            # For sh/bash/zsh/ash/dash/pdksh
-source "$HOME/.cargo/env.fish"  # For fish
+. "$HOME/.cargo/reticulum"            # For sh/bash/zsh/ash/dash/pdksh
+source "$HOME/.cargo/reticulum.fish"  # For fish
 
-(env) reticulum@iris:~$ . "$HOME/.cargo/env"
-(env) reticulum@iris:~$ rustc --version
+(reticulum) rns@iris:~$ . "$HOME/.cargo/env"
+(reticulum) rns@iris:~$ rustc --version
 rustc 1.85.0 (4d91de4e4 2025-02-17)
 ```
 This example was done on a Allwinner D1 powered risc-v system running Ubuntu 24.04. The subsequent install of RNS looks like:
 ```console
-(env) reticulum@mqpro:~$ pip install rns
+(reticulum) rns@mqpro:~$ pip install rns
 Collecting rns
   Downloading rns-0.9.2-py3-none-any.whl.metadata (21 kB)
 Collecting cryptography>=3.4.7 (from rns)
@@ -343,17 +343,17 @@ Using cached pycparser-2.22-py3-none-any.whl (117 kB)
 Building wheels for collected packages: cryptography
   Building wheel for cryptography (pyproject.toml) ... done
   Created wheel for cryptography: filename=cryptography-44.0.1-cp37-abi3-linux_riscv64.whl size=1661987 sha256=46987985840b79d0d822e2f18db4191de4b04f3893a3494b1a47eb10b509e50d
-  Stored in directory: /home/reticulum/.cache/pip/wheels/26/4a/06/7c6ef086a56fcd8fcb74368e21438bb87f02a03fad39255377
+  Stored in directory: /home/rns/.cache/pip/wheels/26/4a/06/7c6ef086a56fcd8fcb74368e21438bb87f02a03fad39255377
 Successfully built cryptography
 Installing collected packages: pyserial, pycparser, cffi, cryptography, rns
 Successfully installed cffi-1.17.1 cryptography-44.0.1 pycparser-2.22 pyserial-3.5 rns-0.9.2
-(env) reticulum@mqpro:~$ rnsd -v
+(reticulum) rns@mqpro:~$ rnsd -v
 [2025-02-25 20:54:51] [Notice]   Could not load config file, creating default configuration file...
-[2025-02-25 20:54:51] [Notice]   Default config file created. Make any necessary changes in /home/reticulum/.reticulum/config and restart Reticulum if needed.
+[2025-02-25 20:54:51] [Notice]   Default config file created. Make any necessary changes in /home/rns/.reticulum/config and restart Reticulum if needed.
 [2025-02-25 20:54:52] [Verbose]  Bringing up system interfaces...
 [2025-02-25 20:54:52] [Verbose]  AutoInterface[Default Interface] discovering peers for 1.5 seconds...
 [2025-02-25 20:54:54] [Verbose]  System interfaces are ready
-[2025-02-25 20:54:54] [Verbose]  Configuration loaded from /home/reticulum/.reticulum/config
+[2025-02-25 20:54:54] [Verbose]  Configuration loaded from /home/rns/.reticulum/config
 [2025-02-25 20:54:54] [Verbose]  Destinations file does not exist, no known destinations loaded
 [2025-02-25 20:54:54] [Verbose]  No valid Transport Identity in storage, creating...
 [2025-02-25 20:54:54] [Verbose]  Identity keys created for <SNIPSNIPSNIPSNIPSNIPSNIPSNIPSNIP>
