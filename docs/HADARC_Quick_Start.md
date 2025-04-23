@@ -10,8 +10,11 @@ Run the program and go to the **Interfaces** section.
 Click on **+ Add Interface** and configure it as follows:
 
 **Name:** `HADARC Hub`
+
 **Type:** `TCP Client Interface`
+
 **Target Host:** `hub.hadarc.org.au`
+
 **Target Port:** `4242`
 
 Click on **Add interface**
