@@ -1,5 +1,5 @@
 # Getting Started with Reticulum
-## Installing and Configuring a LXMF client
+## Installing and Configuring a LXMF (Messaging) client
 
 In this example we will be installing the [Reticulum Meshchat](https://github.com/liamcottle/reticulum-meshchat) app that is available for Mac, Linux and Windows.
 
