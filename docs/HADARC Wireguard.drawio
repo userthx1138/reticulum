@@ -5,10 +5,16 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="oz23FSDln0_gIlWVmay0-1" value="hub.hadarc.org.au&lt;div&gt;44.136.164.1&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="310" y="170" width="120" height="60" as="geometry" />
+          <mxGeometry x="354" y="80" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="oz23FSDln0_gIlWVmay0-2" value="VK2DIO Mac" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="190" y="310" width="120" height="60" as="geometry" />
+        <mxCell id="oz23FSDln0_gIlWVmay0-2" value="VK2DIO Mac&lt;div&gt;44.136.164.4&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="204" y="220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m5f7mHAsdr0kV1R7_icE-1" value="&lt;div&gt;VK2RNS ASL3 Pi 44.136.164.6&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="504" y="220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m5f7mHAsdr0kV1R7_icE-2" value="&lt;div&gt;VK2RNS mmdvm Pi 44.136.164.5&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="354" y="220" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
