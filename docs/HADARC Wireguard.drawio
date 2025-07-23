@@ -4,11 +4,11 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="oz23FSDln0_gIlWVmay0-1" value="hub.hadarc.org.au&lt;div&gt;44.136.164.1&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="oz23FSDln0_gIlWVmay0-1" value="hub.hadarc.org.au&lt;div&gt;44.136.164.1&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="310" y="170" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="oz23FSDln0_gIlWVmay0-2" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="180" y="360" width="120" height="60" as="geometry" />
+        <mxCell id="oz23FSDln0_gIlWVmay0-2" value="VK2DIO Mac" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="190" y="310" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
